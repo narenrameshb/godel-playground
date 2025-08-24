@@ -100,55 +100,104 @@ class GodelExamples:
                 description="A universal statement claiming that every number equals itself.",
                 category="Variables and Logic",
                 difficulty="Intermediate",
-                historical_context="Universal quantifiers allow us to make statements about all objects.",
+                historical_context="Universal quantifiers are fundamental to mathematical logic.",
                 learning_objectives=[
-                    "Learn about universal quantifiers",
-                    "Understand logical structure",
-                    "See how quantifiers are encoded"
+                    "Understand universal quantification",
+                    "See how quantifiers are encoded",
+                    "Learn about logical structure"
                 ],
-                related_concepts=["Universal quantifiers", "Logical structure", "Identity"]
+                related_concepts=["Universal quantifier", "Logical structure", "Identity"]
             ),
             
             # Advanced Examples
             GodelExample(
-                name="Gödel Sentence Template",
-                statement="The statement with Gödel number G(THIS) is unprovable",
-                description="A template for creating Gödel's famous undecidable statement.",
-                category="Self-Reference",
-                difficulty="Expert",
-                historical_context="This is the core of Gödel's first incompleteness theorem.",
+                name="Peano Axiom",
+                statement="∀x(S(x)≠0)",
+                description="Peano axiom stating that zero is not the successor of any number.",
+                category="Advanced Logic",
+                difficulty="Advanced",
+                historical_context="This is one of Peano's fundamental axioms for arithmetic.",
                 learning_objectives=[
-                    "Understand Gödel's incompleteness",
-                    "Learn about self-reference",
-                    "See undecidable statements"
+                    "Understand complex logical statements",
+                    "See how multiple concepts combine",
+                    "Learn about axiomatic systems"
                 ],
-                related_concepts=["Gödel's incompleteness", "Self-reference", "Undecidability"]
+                related_concepts=["Peano axioms", "Complex logic", "Axiomatic systems"]
+            ),
+            
+            GodelExample(
+                name="Mathematical Induction",
+                statement="∀x(P(x)→P(S(x)))",
+                description="Induction step: if P holds for x, it holds for the successor of x.",
+                category="Advanced Logic",
+                difficulty="Advanced",
+                historical_context="Mathematical induction is a fundamental proof technique.",
+                learning_objectives=[
+                    "Understand implication in logic",
+                    "See complex quantifier structures",
+                    "Learn about mathematical induction"
+                ],
+                related_concepts=["Mathematical induction", "Implication", "Complex logic"]
             )
         ]
     
     def _get_categories(self) -> List[str]:
-        """Get all available categories."""
+        """Get unique categories from examples."""
         return list(set(example.category for example in self.examples))
     
     def get_examples_by_category(self, category: str) -> List[GodelExample]:
         """Get examples filtered by category."""
-        return [ex for ex in self.examples if ex.category == category]
+        return [example for example in self.examples if example.category == category]
     
     def get_examples_by_difficulty(self, difficulty: str) -> List[GodelExample]:
         """Get examples filtered by difficulty level."""
-        return [ex for ex in self.examples if ex.difficulty == difficulty]
+        return [example for example in self.examples if example.difficulty == difficulty]
     
-    def get_progressive_sequence(self) -> List[GodelExample]:
-        """Get examples in a progressive learning sequence."""
-        difficulty_order = ["Beginner", "Intermediate", "Advanced", "Expert"]
-        progressive = []
-        
-        for difficulty in difficulty_order:
-            difficulty_examples = self.get_examples_by_difficulty(difficulty)
-            progressive.extend(difficulty_examples)
-        
-        return progressive
+    def get_example_by_name(self, name: str) -> GodelExample:
+        """Get a specific example by name."""
+        for example in self.examples:
+            if example.name == name:
+                return example
+        return None
     
-    def get_categories(self) -> List[str]:
-        """Get all available categories."""
-        return self.categories
+    def get_random_example(self) -> GodelExample:
+        """Get a random example from the collection."""
+        import random
+        return random.choice(self.examples)
+    
+    def search_examples(self, query: str) -> List[GodelExample]:
+        """Search examples by name, description, or concepts."""
+        query = query.lower()
+        results = []
+        
+        for example in self.examples:
+            if (query in example.name.lower() or 
+                query in example.description.lower() or
+                any(query in concept.lower() for concept in example.related_concepts)):
+                results.append(example)
+        
+        return results
+    
+    def get_learning_progression(self) -> Dict[str, List[GodelExample]]:
+        """Get examples organized by learning progression."""
+        return {
+            'Beginner': self.get_examples_by_difficulty('Beginner'),
+            'Intermediate': self.get_examples_by_difficulty('Intermediate'),
+            'Advanced': self.get_examples_by_difficulty('Advanced')
+        }
+    
+    def get_category_summary(self) -> Dict[str, Dict]:
+        """Get summary statistics for each category."""
+        summary = {}
+        
+        for category in self.categories:
+            examples = self.get_examples_by_category(category)
+            difficulties = [ex.difficulty for ex in examples]
+            
+            summary[category] = {
+                'count': len(examples),
+                'difficulties': list(set(difficulties)),
+                'examples': [ex.name for ex in examples]
+            }
+        
+        return summary
