@@ -13,7 +13,7 @@ import utils
 
 def demo_basic_encoding():
     """Demonstrate basic encoding functionality."""
-    print("🔤 Basic Encoding Demo")
+    print("Basic Encoding Demo")
     print("=" * 50)
     
     encoder = SimplifiedGodelEncoder()
@@ -98,12 +98,15 @@ def demo_paradoxes():
                 
                 if paradox_data['has_self_reference']:
                     print(f"Self-Referential: '{paradox_data['self_referential_statement']}'")
-                    print(f"Final Gödel Number: {paradox_data['final_godel_number']:,}")
-                    print(f"Paradox Type: {paradox_data['paradox_type']}")
                 
-                # Show analysis
+                print(f"Explanation: {paradox_data['explanation']}")
+                
+                # Analyze the paradox
                 analysis = paradox_gen.analyze_paradox(paradox_data)
-                print(f"Explanation: {analysis['explanation']}")
+                if 'logical_implications' in analysis:
+                    print("   Logical Implications:")
+                    for implication in analysis['logical_implications']:
+                        print(f"     - {implication}")
                 
             else:
                 print(f"Error with {paradox_type}: {paradox_data['error']}")
@@ -121,143 +124,123 @@ def demo_visualizations():
     encoder = SimplifiedGodelEncoder()
     visualizer = GodelVisualizer()
     
-    # Create a simple statement for visualization
+    # Create a sample statement
     statement = "x=0"
     godel_number, encoding_details = encoder.encode_statement(statement)
     
     print(f"Statement: '{statement}'")
     print(f"Gödel Number: {godel_number:,}")
     
-    # Test different visualization types
+    # Create visualizations
     try:
         # Prime factorization tree
-        tree_fig = visualizer.create_prime_factorization_tree(encoding_details['prime_factors'])
-        print("Prime factorization tree created")
+        tree_fig = visualizer.create_prime_factorization_tree(
+            encoding_details['prime_factors'],
+            f"Prime Factorization of '{statement}'"
+        )
+        print("Created prime factorization tree visualization")
         
         # Symbol mapping chart
-        print("Symbol mapping chart created")
+        mapping_fig = visualizer.create_symbol_mapping_chart(
+            encoding_details,
+            f"Symbol Mapping for '{statement}'"
+        )
+        print("Created symbol mapping chart")
         
         # Process flow
-        print("Process flow diagram created")
-        
-        # Prime factor breakdown
-        print("Prime factor breakdown created")
+        flow_fig = visualizer.create_encoding_process_flow(encoding_details)
+        print("Created encoding process flow diagram")
         
         print("All visualizations created successfully!")
-        print("Note: These are Plotly figures that would be displayed in a web interface")
         
     except Exception as e:
-        print(f"Visualization error: {e}")
+        print(f"Error creating visualizations: {e}")
     
     print("\n" + "=" * 50)
 
 def demo_examples():
-    """Demonstrate the examples system."""
-    print("Examples Demo")
+    """Demonstrate the examples collection."""
+    print("Examples Collection Demo")
     print("=" * 50)
     
     examples = GodelExamples()
     
-    # Show available categories
-    categories = examples.get_categories()
-    print(f"Available Categories: {', '.join(categories)}")
+    # Show all categories
+    categories = examples.categories
+    print(f"Available categories: {', '.join(categories)}")
     
     # Show examples by difficulty
-    difficulties = ["Beginner", "Intermediate", "Advanced", "Expert"]
-    
-    for difficulty in difficulties:
+    for difficulty in ["Beginner", "Intermediate", "Advanced"]:
         difficulty_examples = examples.get_examples_by_difficulty(difficulty)
-        if difficulty_examples:
-            print(f"\n{difficulty} Examples:")
-            for example in difficulty_examples:
-                print(f"   • {example.name}: '{example.statement}'")
-                print(f"     {example.description}")
+        print(f"\n{difficulty} examples ({len(difficulty_examples)}):")
+        for example in difficulty_examples:
+            print(f"  - {example.name}: {example.statement}")
+            print(f"    {example.description}")
     
-    # Show progressive sequence
-    print(f"\nProgressive Learning Sequence:")
-    progressive = examples.get_progressive_sequence()
-    for i, example in enumerate(progressive[:5], 1):  # Show first 5
-        print(f"   {i}. {example.name} ({example.difficulty})")
+    # Show learning progression
+    progression = examples.get_learning_progression()
+    print(f"\nLearning progression:")
+    for level, level_examples in progression.items():
+        print(f"  {level}: {len(level_examples)} examples")
     
     print("\n" + "=" * 50)
 
 def demo_utils():
     """Demonstrate utility functions."""
-    print("Utils Demo")
+    print("Utility Functions Demo")
     print("=" * 50)
     
     # Prime number utilities
-    print("Prime Number Utilities:")
-    first_10_primes = utils.get_first_n_primes(10)
-    print(f"   First 10 primes: {first_10_primes}")
+    primes = utils.get_first_n_primes(10)
+    print(f"First 10 primes: {primes}")
     
     # Size estimation
-    print("\nSize Estimation:")
-    for length in [5, 10, 15]:
-        estimate = utils.estimate_godel_number_size(length)
-        print(f"   {length} symbols → ~{estimate['digits']} digits ({estimate['scientific_notation']})")
+    size_estimate = utils.estimate_godel_number_size(5)
+    print(f"Size estimate for 5-symbol statement:")
+    print(f"  Estimated digits: {size_estimate['digits']}")
+    print(f"  Scientific notation: {size_estimate['scientific_notation']}")
     
-    print("\n" + "=" * 50)
-
-def demo_custom_paradox():
-    """Demonstrate custom paradox creation."""
-    print("Custom Paradox Demo")
-    print("=" * 50)
+    # Statement validation
+    test_statements = ["0=0", "x=0", "invalid@symbol", ""]
+    for statement in test_statements:
+        validation = utils.validate_statement(statement)
+        print(f"\nValidation for '{statement}':")
+        print(f"  Valid: {validation['valid']}")
+        if validation['errors']:
+            print(f"  Errors: {validation['errors']}")
+        if validation['warnings']:
+            print(f"  Warnings: {validation['warnings']}")
     
-    encoder = SimplifiedGodelEncoder()
-    paradox_gen = ParadoxGenerator(encoder)
-    
-    # Create a custom paradox
-    custom_statement = "The statement with Gödel number G(THIS) is interesting"
-    
-    try:
-        paradox_data = paradox_gen.create_custom_paradox(custom_statement)
-        
-        if 'error' not in paradox_data:
-            print(f"Custom Statement: '{paradox_data['custom_statement']}'")
-            print(f"Base Gödel Number: {paradox_data['base_godel_number']:,}")
-            print(f"Self-Referential: '{paradox_data['self_referential_statement']}'")
-            print(f"Final Gödel Number: {paradox_data['final_godel_number']:,}")
-            print(f"Paradox Type: {paradox_data['paradox_type']}")
-        else:
-            print(f"Error: {paradox_data['error']}")
-            
-    except Exception as e:
-        print(f"Error creating custom paradox: {e}")
+    # Prime info
+    prime_info = utils.get_prime_info(17)
+    if 'error' not in prime_info:
+        print(f"\nPrime 17 info:")
+        print(f"  Position: {prime_info['position']}")
+        print(f"  Next prime: {prime_info['next_prime']}")
+        print(f"  Previous prime: {prime_info['previous_prime']}")
     
     print("\n" + "=" * 50)
 
 def main():
     """Run all demos."""
-    print("Gödel Numbering Playground - Interactive Demo")
-    print("=" * 60)
-    print("This demo shows the core functionality without requiring Streamlit.")
+    print("Gödel Numbering Playground - Demo Mode")
     print("=" * 60)
     
-    # Run all demos
-    demos = [
-        ("Basic Encoding", demo_basic_encoding),
-        ("Decoding", demo_decoding),
-        ("Paradox Generation", demo_paradoxes),
-        ("Visualizations", demo_visualizations),
-        ("Examples", demo_examples),
-        ("Utilities", demo_utils),
-        ("Custom Paradox", demo_custom_paradox)
-    ]
-    
-    for demo_name, demo_func in demos:
-        print(f"\nRunning {demo_name} Demo...")
-        try:
-            demo_func()
-        except Exception as e:
-            print(f"Demo failed: {e}")
-            import traceback
-            traceback.print_exc()
-    
-    print("\n" + "=" * 60)
-    print("Demo completed!")
-    print("To run the full interactive web app, use: streamlit run app.py")
-    print("=" * 60)
+    try:
+        demo_basic_encoding()
+        demo_decoding()
+        demo_paradoxes()
+        demo_visualizations()
+        demo_examples()
+        demo_utils()
+        
+        print("\nAll demos completed successfully!")
+        print("The playground is working correctly.")
+        
+    except Exception as e:
+        print(f"\nDemo failed with error: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()
